@@ -2,7 +2,9 @@ package u05lab.ex1
 
 import u05lab.ex1.List
 
-// Ex 1. implement the missing methods both with recursion or with using fold, map, flatMap, and filters
+import scala.Option
+import scala.annotation.tailrec
+
 // List as a pure interface
 enum List[A]:
   case ::(h: A, t: List[A])
@@ -58,17 +60,87 @@ enum List[A]:
 
   def reverse(): List[A] = foldLeft[List[A]](Nil())((l, e) => e :: l)
 
-  /** EXERCISES */
-  def zipRight: List[(A, Int)] = ???
+  def indexWhere(pred: A => Boolean): Int =
+    var i = 0
+    while (i < length) {
+      val opt = get(i)
+      if(opt.isDefined && pred(opt.get)) return i
+      i += 1
+    }
+    -1
 
-  def partition(pred: A => Boolean): (List[A], List[A]) = ???
+  def indexOf(elem: A): Int = indexWhere(elem == _)
 
-  def span(pred: A => Boolean): (List[A], List[A]) = ???
+  def findFirstIndex(pred: A => Boolean): Option[Int] =
+    @tailrec
+    def _find(list: List[A])(pred: A => Boolean): Option[Int] = list match
+      case h :: _ if pred(h) => Some(indexOf(h))
+      case _ :: t => _find(t)(pred)
+      case _ => None
 
-  /** @throws UnsupportedOperationException if the list is empty */
-  def reduce(op: (A, A) => A): A = ???
+    _find(this)(pred)
 
-  def takeRight(n: Int): List[A] = ???
+  def splitAt(n: Int): (List[A], List[A]) =
+    @tailrec
+    def _splitAt(list: List[A], n: Int, l1: List[A]): (List[A], List[A]) = list match
+      case h :: _ if indexOf(h) == n => (l1, list)
+      case h :: t => _splitAt(t, n, h :: l1)
+      case _ => (Nil(), Nil())
+
+    _splitAt(this, n, Nil())
+
+  def zipRight: List[(A, Int)] =
+    map(e => (e, indexOf(e)))
+
+  def zipRightR: List[(A, Int)] =
+    def _zipRight(l: List[A], n: Int): List[(A, Int)] = l match
+      case h :: t => (h, n) :: _zipRight(t, n + 1)
+      case _ => Nil()
+
+    _zipRight(this, 0)
+
+  def partition(pred: A => Boolean): (List[A], List[A]) =
+    (filter(pred), filter(!pred(_)))
+
+  def partitionR(pred: A => Boolean): (List[A], List[A]) =
+    @tailrec
+    def _partitionR(list: List[A], pred: A => Boolean, l1: List[A], l2: List[A]): (List[A], List[A]) = list match
+      case h :: t if pred(h) => _partitionR(t, pred, h :: l1, l2)
+      case h :: t => _partitionR(t, pred, l1, h :: l2)
+      case _ => (l1.reverse(), l2.reverse())
+
+    _partitionR(this, pred, Nil(), Nil())
+
+  def span(pred: A => Boolean): (List[A], List[A]) =
+    def _span(n: Int) = (filter(a => !(!pred(a) && indexOf(a) < n)), filter(a => !pred(a) && indexOf(a) < n))
+    findFirstIndex(pred).fold((Nil(), Nil()))(_span)
+
+  def spanR(pred: A => Boolean): (List[A], List[A]) =
+    findFirstIndex(pred).fold((Nil(), Nil()))(splitAt)
+
+  def reduce(op: (A, A) => A): A = this match
+    case h :: t => t.foldLeft(h)(op)
+    case _ => throw UnsupportedOperationException()
+
+  def reduceR(op: (A, A) => A): A = this match
+    case h :: Nil() => h
+    case h :: t => op(h, t.reduceR(op))
+    case _ => throw UnsupportedOperationException()
+
+  def takeRight(n: Int): List[A] =
+    filter(length - n <= indexOf(_))
+
+  def takeRightR(n: Int): List[A] =
+    @tailrec
+    def _takeRight(list: List[A], n: Int): List[A] = list match
+      case h :: t if length == n + indexOf(h) + 1 => t
+      case _ :: t => _takeRight(t, n)
+      case _ => Nil()
+
+    _takeRight(this, n)
+
+  def collect[B](f: PartialFunction[A, B]): List[B] =
+    this.filter(f.isDefinedAt).map(f)
 
 // Factories
 object List:
@@ -80,15 +152,3 @@ object List:
 
   def of[A](elem: A, n: Int): List[A] =
     if n == 0 then Nil() else elem :: of(elem, n - 1)
-
-@main def checkBehaviour(): Unit =
-  val reference = List(1, 2, 3, 4)
-  println(reference.zipRight) // List((1, 0), (2, 1), (3, 2), (4, 3))
-  println(reference.partition(_ % 2 == 0)) // (List(2, 4), List(1, 3))
-  println(reference.span(_ % 2 != 0)) // (List(1), List(2, 3, 4))
-  println(reference.span(_ < 3)) // (List(1, 2), List(3, 4))
-  println(reference.reduce(_ + _)) // 10
-  try Nil.reduce[Int](_ + _)
-  catch case ex: Exception => println(ex) // prints exception
-  println(List(10).reduce(_ + _)) // 10
-  println(reference.takeRight(3)) // List(2, 3, 4)
