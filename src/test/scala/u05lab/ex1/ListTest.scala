@@ -12,6 +12,9 @@ class ListTest {
   @Test def testZipRight(): Unit =
     assertEquals((1, 0) :: (2, 1) :: (3, 2) :: (4, 3) :: Nil(), l.zipRight)
 
+  @Test def testZipRightEmpty(): Unit =
+    assertEquals(Nil(), Nil().zipRight)
+
   @Test def testPartition(): Unit =
     assertEquals((2 :: 4 :: Nil(), 1 :: 3 :: Nil()), l.partition(_ % 2 == 0))
 
@@ -26,6 +29,9 @@ class ListTest {
 
   @Test def testTakeRight(): Unit =
     assertEquals(2 :: 3 :: 4 :: Nil(), l.takeRight(3))
+
+  @Test def testTakeRightEmpty(): Unit =
+    assertEquals(Nil(), Nil().takeRight(3))
 
   @Test def testCollect(): Unit =
     assertEquals(2 :: 3 :: 4 :: Nil(), l.collect({case i if i < 4 => i + 1}))

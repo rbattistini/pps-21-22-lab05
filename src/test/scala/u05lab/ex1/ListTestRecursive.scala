@@ -11,6 +11,9 @@ class ListTestRecursive {
   @Test def testZipRight(): Unit =
     assertEquals((1, 0) :: (2, 1) :: (3, 2) :: (4, 3) :: Nil(), l.zipRightR)
 
+  @Test def testZipRightEmpty(): Unit =
+    assertEquals(Nil(), Nil().zipRightR)
+
   @Test def testPartition(): Unit =
     assertEquals((2 :: 4 :: Nil(), 1 :: 3 :: Nil()), l.partitionR(_ % 2 == 0))
 
@@ -26,4 +29,6 @@ class ListTestRecursive {
   @Test def testTakeRight(): Unit =
     assertEquals(2 :: 3 :: 4 :: Nil(), l.takeRightR(3))
 
+  @Test def testTakeRightEmpty(): Unit =
+    assertEquals(Nil(), Nil().takeRightR(3))
 }
