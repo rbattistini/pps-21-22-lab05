@@ -36,7 +36,7 @@ enum List[A]:
     case _ => None
 
   def filter(predicate: A => Boolean): List[A] =
-    foldRight(Nil())((h, t) => if predicate(h) then h :: t else t.filterR(predicate))
+    foldRight(Nil())((h, t) => if predicate(h) then h :: t else t)
 
   def filterR(predicate: A => Boolean): List[A] = this match
     case h :: t if predicate(h) => h :: t.filterR(predicate)
@@ -67,7 +67,7 @@ enum List[A]:
     case Nil() => true
     case _ => false
 
-  def reverse(): List[A] = foldLeft[List[A]](Nil())((l, e) => e :: l)
+  def reverse(): List[A] = foldLeft(Nil())((l, e) => e :: l)
 
   def zipRight: List[(A, Int)] =
     foldRight(Nil())((h, t) => (h, length - 1 - t.length) :: t)
