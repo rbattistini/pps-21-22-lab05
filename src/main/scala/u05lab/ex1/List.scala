@@ -19,8 +19,11 @@ enum List[A]:
     case h :: t => Some(t)
     case _ => None
 
-  def append(list: List[A]): List[A] = this match
-    case h :: t => h :: t.append(list)
+  def append(list: List[A]): List[A] =
+    foldRight(list)((h, t) => h :: t)
+
+  def appendR(list: List[A]): List[A] = this match
+    case h :: t => h :: t.appendR(list)
     case _ => list
 
   def foreach(consumer: A => Unit): Unit = this match
@@ -32,13 +35,19 @@ enum List[A]:
     case h :: t if pos > 0 => t.get(pos - 1)
     case _ => None
 
-  def filter(predicate: A => Boolean): List[A] = this match
-    case h :: t if predicate(h) => h :: t.filter(predicate)
-    case _ :: t => t.filter(predicate)
+  def filter(predicate: A => Boolean): List[A] =
+    foldRight(Nil())((h, t) => if predicate(h) then h :: t else t.filterR(predicate))
+
+  def filterR(predicate: A => Boolean): List[A] = this match
+    case h :: t if predicate(h) => h :: t.filterR(predicate)
+    case _ :: t => t.filterR(predicate)
     case _ => Nil()
 
-  def map[B](fun: A => B): List[B] = this match
-    case h :: t => fun(h) :: t.map(fun)
+  def map[B](fun: A => B): List[B] =
+    foldRight(Nil())((h, t) => fun(h) :: t)
+
+  def mapR[B](fun: A => B): List[B] = this match
+    case h :: t => fun(h) :: t.mapR(fun)
     case _ => Nil()
 
   def flatMap[B](f: A => List[B]): List[B] =
@@ -60,37 +69,8 @@ enum List[A]:
 
   def reverse(): List[A] = foldLeft[List[A]](Nil())((l, e) => e :: l)
 
-  def indexWhere(pred: A => Boolean): Int =
-    var i = 0
-    while (i < length) {
-      val opt = get(i)
-      if(opt.isDefined && pred(opt.get)) return i
-      i += 1
-    }
-    -1
-
-  def indexOf(elem: A): Int = indexWhere(elem == _)
-
-  def findFirstIndex(pred: A => Boolean): Option[Int] =
-    @tailrec
-    def _find(list: List[A])(pred: A => Boolean): Option[Int] = list match
-      case h :: _ if pred(h) => Some(indexOf(h))
-      case _ :: t => _find(t)(pred)
-      case _ => None
-
-    _find(this)(pred)
-
-  def splitAt(n: Int): (List[A], List[A]) =
-    @tailrec
-    def _splitAt(list: List[A], n: Int, l1: List[A]): (List[A], List[A]) = list match
-      case h :: _ if indexOf(h) == n => (l1, list)
-      case h :: t => _splitAt(t, n, h :: l1)
-      case _ => (Nil(), Nil())
-
-    _splitAt(this, n, Nil())
-
   def zipRight: List[(A, Int)] =
-    map(e => (e, indexOf(e)))
+    foldRight(Nil())((h, t) => (h, length - 1 - t.length) :: t)
 
   def zipRightR: List[(A, Int)] =
     def _zipRight(l: List[A], n: Int): List[(A, Int)] = l match
@@ -102,6 +82,9 @@ enum List[A]:
   def partition(pred: A => Boolean): (List[A], List[A]) =
     (filter(pred), filter(!pred(_)))
 
+  def partitionFold(pred: A => Boolean): (List[A], List[A]) =
+    foldRight((Nil(), Nil()))((h, t) => if pred(h) then (h :: t._1, t._2) else (t._1, h :: t._2))
+
   def partitionR(pred: A => Boolean): (List[A], List[A]) =
     @tailrec
     def _partitionR(list: List[A], pred: A => Boolean, l1: List[A], l2: List[A]): (List[A], List[A]) = list match
@@ -112,35 +95,37 @@ enum List[A]:
     _partitionR(this, pred, Nil(), Nil())
 
   def span(pred: A => Boolean): (List[A], List[A]) =
-    def _span(n: Int) = (filter(a => !(!pred(a) && indexOf(a) < n)), filter(a => !pred(a) && indexOf(a) < n))
-    findFirstIndex(pred).fold((Nil(), Nil()))(_span)
+    foldRight((Nil(), Nil()))(
+      (h, t) => if pred(h) then (h :: t._1, t._2) else (Nil(), h :: t._1.append(t._2))
+    )
 
-  def spanR(pred: A => Boolean): (List[A], List[A]) =
-    findFirstIndex(pred).fold((Nil(), Nil()))(splitAt)
+  def spanRec(pred: A => Boolean): (List[A], List[A]) = this match
+    case h :: t if pred(h) => val r = t.spanRec(pred); (h :: r._1, r._2)
+    case _ => (Nil(), this)
 
-  def reduce(op: (A, A) => A): A = this match
-    case h :: t => t.foldLeft(h)(op)
+  def reduce(f: (A, A) => A): A = this match
+    case h :: t => t.foldLeft(h)(f)
     case _ => throw UnsupportedOperationException()
 
-  def reduceR(op: (A, A) => A): A = this match
+  def reduceR(f: (A, A) => A): A = this match
     case h :: Nil() => h
-    case h :: t => op(h, t.reduceR(op))
+    case h :: t => f(h, t.reduceR(f))
     case _ => throw UnsupportedOperationException()
 
   def takeRight(n: Int): List[A] =
-    filter(length - n <= indexOf(_))
+    foldRight(Nil())((h, t) => if t.length == n then t else h :: t)
 
-  def takeRightR(n: Int): List[A] =
-    @tailrec
-    def _takeRight(list: List[A], n: Int): List[A] = list match
-      case h :: t if length == n + indexOf(h) + 1 => t
-      case _ :: t => _takeRight(t, n)
-      case _ => Nil()
-
-    _takeRight(this, n)
+  def takeRightR(n: Int): List[A] = this match
+    case h :: t if length == n => h :: t.takeRightR(n - 1)
+    case h :: t => t.takeRightR(n)
+    case _ => Nil()
 
   def collect[B](f: PartialFunction[A, B]): List[B] =
-    this.filter(f.isDefinedAt).map(f)
+    filter(f.isDefinedAt).map(f)
+
+  def collectR[B](f: PartialFunction[A, B]): List[B] = this match
+    case h :: t => if f.isDefinedAt(h) then f(h) :: t.collectR(f) else t.collectR(f)
+    case _ => Nil()
 
 // Factories
 object List:
