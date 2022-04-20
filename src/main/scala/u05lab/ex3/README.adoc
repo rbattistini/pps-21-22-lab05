@@ -1,4 +1,4 @@
-= Performance comparison among Scala collections
+= Benchmarking Scala collections
 
 .Create, with 100000 elements
 [stripes=even, cols="1,1"]
