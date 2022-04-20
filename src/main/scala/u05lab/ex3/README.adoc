@@ -1,30 +1,30 @@
 = Performance comparison among Scala collections
 
-.Create
+.Create, with 100000 elements
 [stripes=even, cols="1,1"]
 |===
 |Collection |Duration (microseconds)
 
 |List - Immutable
-|3205
+|3551
 
 |List - Mutable
-|3080
+|3702
 
 |Vector - Immutable
-|565
+|999
 
 |Array - Immutable
-|100
+|123
 
 |Array - Mutable
-|34
+|35
 
 |Set - Immutable
-|41
+|42
 
 |Set - Mutable
-|986
+|1036
 
 |===
 
@@ -34,10 +34,10 @@
 |Collection |Duration (microseconds)
 
 |List - Immutable
-|3177
+|3148
 
 |List - Mutable
-|7
+|6
 
 |Vector - Immutable
 |7
@@ -46,39 +46,39 @@
 |2
 
 |Array - Mutable
-|4
+|5
 
 |Set - Immutable
-|9
+|11
 
 |Set - Mutable
-|8
+|6
 
 |===
 
-.Read: Get element
+.Read: Get element at position: 50000
 [stripes=even, cols="1,1"]
 |===
 |Collection |Duration (microseconds)
 
 |List - Immutable
-|3083
+|3332
 
 |List - Mutable
-|1436
+|1537
 
 |Vector - Immutable
-|9
+|8
 
 |Array - Immutable
 |2
 
 |Array - Mutable
-|10
+|11
 
 |===
 
-.Write: Add {head, tail}
+.Write: Add element at {head, tail}
 [stripes=even, cols="1,1"]
 |===
 |Collection |Duration (microseconds)
@@ -87,10 +87,10 @@
 |3
 
 |List - Immutable - Tail
-|10125
+|10845
 
 |List - Mutable - Head
-|7
+|5
 
 |List - Mutable - Tail
 |8
@@ -99,41 +99,41 @@
 |31
 
 |Vector - Immutable - Tail
-|9
+|8
 
 |Array - Immutable - Head
-|5525
+|5883
 
 |Array - Immutable - Tail
-|211
+|244
 
 |Array - Mutable - Head
-|553
+|501
 
 |Array - Mutable - Tail
-|8
+|7
 
 |===
 
-.Remove
+.Remove element from position: 50000
 [stripes=even, cols="1,1"]
 |===
 |Collection |Duration (microseconds)
 
 |List - Immutable
-|4941
+|5191
 
 |List - Mutable
-|6016
+|6336
 
 |Vector - Immutable
-|454
+|449
 
 |Array - Immutable
-|32
+|69
 
 |Array - Mutable
-|3113
+|2780
 
 |===
 
