@@ -35,12 +35,12 @@ enum List[A]:
     case h :: t if pos > 0 => t.get(pos - 1)
     case _ => None
 
-  def filter(predicate: A => Boolean): List[A] =
-    foldRight(Nil())((h, t) => if predicate(h) then h :: t else t)
+  def filter(pred: A => Boolean): List[A] =
+    foldRight(Nil())((h, t) => if pred(h) then h :: t else t)
 
-  def filterR(predicate: A => Boolean): List[A] = this match
-    case h :: t if predicate(h) => h :: t.filterR(predicate)
-    case _ :: t => t.filterR(predicate)
+  def filterR(pred: A => Boolean): List[A] = this match
+    case h :: t if pred(h) => h :: t.filterR(pred)
+    case _ :: t => t.filterR(pred)
     case _ => Nil()
 
   def map[B](fun: A => B): List[B] =
@@ -95,12 +95,10 @@ enum List[A]:
     _partitionR(this, pred, Nil(), Nil())
 
   def span(pred: A => Boolean): (List[A], List[A]) =
-    foldRight((Nil(), Nil()))(
-      (h, t) => if pred(h) then (h :: t._1, t._2) else (Nil(), h :: t._1.append(t._2))
-    )
+    foldRight((Nil(), Nil()))((h, t) => if pred(h) then (h :: t._1, t._2) else (Nil(), h :: t._1.append(t._2)))
 
-  def spanRec(pred: A => Boolean): (List[A], List[A]) = this match
-    case h :: t if pred(h) => val r = t.spanRec(pred); (h :: r._1, r._2)
+  def spanR(pred: A => Boolean): (List[A], List[A]) = this match
+    case h :: t if pred(h) => val r = t.spanR(pred); (h :: r._1, r._2)
     case _ => (Nil(), this)
 
   def reduce(f: (A, A) => A): A = this match
