@@ -1,0 +1,139 @@
+= Performance comparison among Scala collections
+
+.Creation
+[stripes=even, cols="1,1"]
+|===
+|Collection |Duration (microseconds)
+
+|List - Immutable
+|10042
+
+|List - Mutable
+|2890
+
+|Vector - Immutable
+|561
+
+|Array - Immutable
+|97
+
+|Array - Mutable
+|34
+
+|Set - Immutable
+|37
+
+|Set - Mutable
+|1170
+
+|===
+
+.Size
+[stripes=even, cols="1,1"]
+|===
+|Collection |Duration (microseconds)
+
+|List - Immutable
+|3094
+
+|List - Mutable
+|6
+
+|Vector - Immutable
+|8
+
+|Array - Immutable
+|2
+
+|Array - Mutable
+|4
+
+|Set - Immutable
+|8
+
+|Set - Mutable
+|6
+
+|===
+
+.Get
+[stripes=even, cols="1,1"]
+|===
+|Collection |Duration (microseconds)
+
+|List - Immutable
+|3096
+
+|List - Mutable
+|1337
+
+|Vector - Immutable
+|9
+
+|Array - Immutable
+|2
+
+|Array - Mutable
+|10
+
+|===
+
+.Add
+[stripes=even, cols="1,1"]
+|===
+|Collection |Duration (microseconds)
+
+|List - Immutable - Head
+|3
+
+|List - Immutable - Tail
+|10028
+
+|List - Mutable - Head
+|6
+
+|List - Mutable - Tail
+|7
+
+|Vector - Immutable - Head
+|29
+
+|Vector - Immutable - Tail
+|8
+
+|Array - Immutable - Head
+|5493
+
+|Array - Immutable - Tail
+|179
+
+|Array - Mutable - Head
+|513
+
+|Array - Mutable - Tail
+|6
+
+|===
+
+.Remove
+[stripes=even, cols="1,1"]
+|===
+|Collection |Duration (microseconds)
+
+|List - Immutable
+|5021
+
+|List - Mutable
+|5805
+
+|Vector - Immutable
+|424
+
+|Array - Immutable
+|30
+
+|Array - Mutable
+|2656
+
+|===
+
