@@ -18,7 +18,7 @@ class ListTestRecursive {
     assertEquals((List(2, 4), List(1, 3)), l.partitionR(_ % 2 == 0))
 
   @Test def testSpan(): Unit =
-    assertEquals((List(1), List(2, 3, 4)), l.spanRec(_ % 2 != 0))
+    assertEquals((List(1), List(2, 3, 4)), l.spanR(_ % 2 != 0))
 
   @Test def testReduce(): Unit =
     assertEquals(10, l.reduceR(_ + _))

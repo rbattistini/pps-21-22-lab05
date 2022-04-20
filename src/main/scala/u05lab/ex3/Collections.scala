@@ -48,7 +48,7 @@ object Collections:
   /*
    *  Create
    */
-  printHeader("Creation")
+  printHeader("Create")
   printLine("List - Immutable")(List.range(1, nElem))
   printLine("List - Mutable")(ListBuffer.range(1, nElem))
   printLine("Vector - Immutable")(Vector.range(1, nElem))
@@ -61,7 +61,7 @@ object Collections:
   /*
    * Read: Size
    */
-  printHeader("Size")
+  printHeader("Read: size")
   printLine("List - Immutable")(l.size)
   printLine("List - Mutable")(lb.size)
   printLine("Vector - Immutable")(v.size)
@@ -75,7 +75,7 @@ object Collections:
    * Read: Get element
    */
   val getPos = nElem / 2
-  printHeader("Get")
+  printHeader("Read: Get element")
   printLine("List - Immutable")(l(getPos))
   printLine("List - Mutable")(lb(getPos))
   printLine("Vector - Immutable")(v(getPos))
@@ -86,7 +86,7 @@ object Collections:
   /*
    * Write: Add {head, tail}
    */
-  printHeader("Add")
+  printHeader("Write: Add {head, tail}")
   printLine("List - Immutable - Head")(0 :: l)
   printLine("List - Immutable - Tail")(l.:+(0))
   printLine("List - Mutable - Head")(lb prepend 0)
