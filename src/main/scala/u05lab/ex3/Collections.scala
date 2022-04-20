@@ -34,7 +34,7 @@ object Collections:
   import Collections.*
   import scala.collection.mutable
   import scala.collection.mutable.{ArrayBuffer, ListBuffer}
-  pw.write("= Performance comparison among Scala collections\n\n")
+  pw.write("= Benchmarking Scala collections\n\n")
 
   val nElem = 100_000
   val l = List.range(1, nElem)
