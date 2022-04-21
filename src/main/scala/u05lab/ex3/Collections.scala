@@ -87,10 +87,10 @@ object Collections:
    * Write: Add {head, tail}
    */
   printHeader("Write: Add element at {head, tail}")
-  printLine("List - Immutable - Head")(0 :: l)
-  printLine("List - Immutable - Tail")(l.:+(0))
-  printLine("List - Mutable - Head")(lb prepend 0)
-  printLine("List - Mutable - Tail")(lb append 0)
+  printLine("List - Immutable - Head")(1 :: l)
+  printLine("List - Immutable - Tail")(l.:+(1))
+  printLine("List - Mutable - Head")(lb prepend 1)
+  printLine("List - Mutable - Tail")(lb append 1)
   printLine("Vector - Immutable - Head")(v.+:(1))
   printLine("Vector - Immutable - Tail")(v :+ 1)
   printLine("Array - Immutable - Head")(a.+:(1))
